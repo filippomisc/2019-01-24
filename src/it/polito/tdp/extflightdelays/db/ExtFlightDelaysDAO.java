@@ -11,6 +11,7 @@ import java.util.List;
 import it.polito.tdp.extflightdelays.model.Airline;
 import it.polito.tdp.extflightdelays.model.Airport;
 import it.polito.tdp.extflightdelays.model.Flight;
+import it.polito.tdp.extflightdelays.model.VerticiPeso;
 
 public class ExtFlightDelaysDAO {
 
@@ -114,5 +115,37 @@ public class ExtFlightDelaysDAO {
 			System.out.println("Errore connessione al database");
 			throw new RuntimeException("Error Connection Database");
 		}
+	}
+
+	public List<VerticiPeso> loadVerticiPeso() {
+		String sql = "select COUNT(distinct f.TAIL_NUMBER) as num_telai, A1.STATE as s1, a2.state as s2 " + 
+				"from airports a1, airports a2, flights f " + 
+				"where a1.ID=f.ORIGIN_AIRPORT_ID " + 
+				"and a2.ID=f.DESTINATION_AIRPORT_ID " + 
+				"group by a1.state, a2.state";
+		
+		List<VerticiPeso> result = new LinkedList<VerticiPeso>();
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			ResultSet rs = st.executeQuery();
+
+			while (rs.next()) {
+				
+				VerticiPeso verticiPeso= new VerticiPeso(rs.getString("s1"), rs.getString("s2"), rs.getInt("num_telai"));
+				
+				result.add(verticiPeso);
+			}
+
+			conn.close();
+			return result;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+		
 	}
 }

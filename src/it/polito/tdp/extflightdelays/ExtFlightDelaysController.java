@@ -5,9 +5,12 @@
 package it.polito.tdp.extflightdelays;
 
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.extflightdelays.model.Model;
+import it.polito.tdp.extflightdelays.model.VerticiPeso;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -47,6 +50,9 @@ public class ExtFlightDelaysController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	model.creaGrafo();
+    	this.txtResult.setText("grafo creato!");
+    	this.cmbBoxStati.getItems().addAll(model.ordinaVertici());
 
     }
 
@@ -57,6 +63,26 @@ public class ExtFlightDelaysController {
 
     @FXML
     void doVisualizzaVelivoli(ActionEvent event) {
+    	StringBuilder builder = new StringBuilder();
+    	List<VerticiPeso> list = model.output(this.cmbBoxStati.getValue());
+    	Collections.sort(list);
+//    	builder.append(list.get(0).getV1());
+    	builder.append(this.cmbBoxStati.getValue());
+    	builder.append("\n");
+
+    	
+    	for (VerticiPeso verticiPeso : list) {
+    		builder.append("stato adiacente: ");
+    		builder.append(verticiPeso.getV2());
+    		builder.append("\n");
+    		builder.append("numero velivoli: ");
+    		builder.append(verticiPeso.getPeso());
+    		builder.append("\n");
+    		builder.append("\n");
+
+    	}
+    	
+		this.txtResult.setText(builder.toString());
 
     }
     
